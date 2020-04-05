@@ -1,2 +1,3 @@
-# fullstackopen
-University of Helsinki fullstack course
+# Full Stack
+
+University of Helsinki [fullstack course](https://fullstackopen.com/en/about)
