@@ -10,8 +10,8 @@ const Header = ({text}) => <h2>{text}</h2>
 const Button = (props) => (
   <button onClick={props.onClick}>{props.text}</button>)
   
-const Statistic = ({text, value}) => <p>{text} {value}</p>
-const Percent = ({text, value}) => <p>{text} {value} %</p>
+const Statistic = ({text, value}) => (
+  <tr><td>{text}</td><td>{value}</td></tr>)
 
 const Statistics = ({good, neutral, bad}) => {
   let total = good + neutral + bad
@@ -21,16 +21,15 @@ const Statistics = ({good, neutral, bad}) => {
   }
   else
   {
-    return (<
-      div>
-        <Header text="statistics" />
+    return (
+      <table>
         <Statistic text="good" value={good} />
         <Statistic text="neutral" value={neutral} />
         <Statistic text="bad" value={bad} />
         <Statistic text="all" value={total} />
         <Statistic text="average" value={(good - bad)/total} />
-        <Percent text="positive" value={percent(good, total)} />
-      </div>)
+        <Statistic text="positive" value={percent(good, total)+"%"} />
+      </table>)
   }
 }
 
@@ -46,6 +45,7 @@ const App = () => {
     <Button text="good" onClick={() => setGood(good + 1)} />
     <Button text="neutral" onClick={() => setNeutral(neutral + 1)} />
     <Button text="bad" onClick={() => setBad(bad + 1)} />
+    <Header text="statistics" />
     <Statistics good={good} neutral={neutral} bad={bad} />
   </div>)
 }
