@@ -15,16 +15,23 @@ const Percent = ({text, value}) => <p>{text} {value} %</p>
 
 const Statistics = ({good, neutral, bad}) => {
   let total = good + neutral + bad
-  return (<
-    div>
-      <Header text="statistics" />
-      <Stat text="good" value={good} />
-      <Stat text="neutral" value={neutral} />
-      <Stat text="bad" value={bad} />
-      <Stat text="all" value={total} />
-      <Stat text="average" value={(good - bad)/total} />
-      <Percent text="positive" value={percent(good, total)} />
-     </div>)
+  if (total === 0)
+  {
+    return <p>No feedback given</p>
+  }
+  else
+  {
+    return (<
+      div>
+        <Header text="statistics" />
+        <Stat text="good" value={good} />
+        <Stat text="neutral" value={neutral} />
+        <Stat text="bad" value={bad} />
+        <Stat text="all" value={total} />
+        <Stat text="average" value={(good - bad)/total} />
+        <Percent text="positive" value={percent(good, total)} />
+      </div>)
+  }
 }
 
 const App = () => {
