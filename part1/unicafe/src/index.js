@@ -1,16 +1,30 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
+const percent = function(v, total) {
+  return total === 0 ? 0 : (100 * v / total)
+}
+
 const Header = ({text}) => <h2>{text}</h2>
 
 const Button = (props) => (
   <button onClick={props.onClick}>{props.text}</button>)
-
+  
 const Stat = ({text, value}) => <p>{text} {value}</p>
 const Percent = ({text, value}) => <p>{text} {value} %</p>
 
-const percent = function(v, total) {
-  return total === 0 ? 0 : (100 * v / total)
+const Statistics = ({good, neutral, bad}) => {
+  let total = good + neutral + bad
+  return (<
+    div>
+      <Header text="statistics" />
+      <Stat text="good" value={good} />
+      <Stat text="neutral" value={neutral} />
+      <Stat text="bad" value={bad} />
+      <Stat text="all" value={total} />
+      <Stat text="average" value={(good - bad)/total} />
+      <Percent text="positive" value={percent(good, total)} />
+     </div>)
 }
 
 const App = () => {
@@ -25,13 +39,7 @@ const App = () => {
     <Button text="good" onClick={() => setGood(good + 1)} />
     <Button text="neutral" onClick={() => setNeutral(neutral + 1)} />
     <Button text="bad" onClick={() => setBad(bad + 1)} />
-    <Header text="statistics" />
-    <Stat text="good" value={good} />
-    <Stat text="neutral" value={neutral} />
-    <Stat text="bad" value={bad} />
-    <Stat text="all" value={good + neutral + bad} />
-    <Stat text="average" value={(good - bad)/3} />
-    <Percent text="positive" value={percent(good, good + neutral + bad)} />
+    <Statistics good={good} neutral={neutral} bad={bad} />
   </div>)
 }
 
