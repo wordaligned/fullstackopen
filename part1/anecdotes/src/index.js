@@ -9,14 +9,19 @@ const voteFor = (votes, n) => {
   return result
 }
 
+const Heading = ({text}) => <h2>{text}</h2>
+
 const App = ({anecdotes}) => {
   const [selected, setSelected] = useState(choice(anecdotes.length))
   const [votes, setVotes] = useState(Array.from(anecdotes).fill(0))
   return (
     <div>
+      <Heading text="Anecdote of the day" />
       <p>{anecdotes[selected]}</p>
       <button onClick={() => setSelected(choice(anecdotes.length))}>next anecdote</button>
       <button onClick={() => setVotes(voteFor(votes, selected))}>vote</button>
+      <Heading text="Anecdote with the most votes" />
+      <p>{anecdotes[votes.indexOf(Math.max(...votes))]}</p>
     </div>
   )
 }
