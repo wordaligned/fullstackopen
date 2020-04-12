@@ -2,18 +2,19 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import './App.css'
 
-const Search = ({setSearch}) => (
-  <div>find countries:
-    <input onChange={
-      (event) => setSearch(event.target.value)} />
-  </div>)
+const getMatches = (countries, search) => (
+  countries.filter((country) => 
+    country.name.search(new RegExp(search, "i")) !== -1))
+
+const Search = ({searchHandler}) => (
+  <div>find countries: <input onChange={searchHandler} /></div>)
 
 const Languages = ({languages}) => (
   <div>
-  <h3>languages</h3>
-  <ul>{languages.map(
-    (lang) => <li key={lang.iso639_1}>{lang.name}</li>)}
-  </ul>
+    <h3>languages</h3>
+    <ul>{languages.map(
+      (lang) => <li key={lang.iso639_1}>{lang.name}</li>)}
+    </ul>
   </div>
 )
 
@@ -27,19 +28,30 @@ const Country = ({country}) => (
   </div>
 )
 
-const Matches = ({countries, search}) => {
-  const matches = countries.filter(
-    (country) => (
-      country.name.search(new RegExp(search, "i")) !== -1))
+const SelectCountry = ({country, selectHandler}) => (
+  <li>{country.name} <button onClick={() => selectHandler(country)}>show</button></li>
+)
+
+const Matches = ({countries, search, selectHandler}) => {
+  const matches = getMatches(countries, search)
   return search.length === 0
     ? <span></span>
     : matches.length > 10
     ? <p>Too many matches</p>
-    : matches.length === 1 
-    ? <Country country={matches[0]} />
-    : <ul>
-      {matches.map((country) => <li key={country.alpha2Code}>{country.name}</li>)}
+    : <ul>{matches.map((country) =>
+          <SelectCountry 
+            key={country.alpha2Code} 
+            country={country}
+            selectHandler={selectHandler}/>)}
       </ul>
+}
+
+const Content = ({countries, search, selectHandler}) => {
+  const matches = getMatches(countries, search)
+  if (matches.length === 1)
+    return <Country country={matches[0]} />
+  else
+    return <Matches countries={countries} search={search} selectHandler={selectHandler} />
 }
 
 const App = () => {
@@ -52,11 +64,14 @@ const App = () => {
       .then(response => setCountries(response.data))
   }, [])
 
+  const searchHandler = (event) => setSearch(event.target.value)
+  const selectHandler = (country) => setSearch(country.name)
+
   return (
     <div>
       <h1>Countries</h1>
-      <Search setSearch={setSearch} />
-      <Matches countries={countries} search={search} />
+      <Search searchHandler={searchHandler} />
+      <Content countries={countries} search={search} selectHandler={selectHandler}/>
     </div>
   )
 }
