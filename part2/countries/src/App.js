@@ -18,13 +18,27 @@ const Languages = ({languages}) => (
   </div>
 )
 
-const Country = ({country}) => (
+const Weather = ({country, weather}) => {
+  if ('location' in weather && 
+      country.capital === weather.location.name)
+    return (<div>
+      <h3>Weather in {country.capital}</h3>
+      <p><em>temperature:</em> {weather.current.temperature}</p>
+      <img src={weather.current.weather_icons[0]} alt='weather icon' />
+      <p><em>wind:</em> {weather.current.wind_speed} {weather.current.wind_dir}</p>
+      </div>)
+  else
+    return null
+}
+
+const Country = ({country, weather}) => (
   <div>
     <h2>{country.name}</h2>
     <p>capital {country.capital}</p>
     <p>population {country.population}</p>
     <Languages languages={country.languages} />
     <img width={200} src={country.flag} alt={country.name + ' flag'} />
+    <Weather country={country} weather={weather} />
   </div>
 )
 
@@ -46,10 +60,10 @@ const Matches = ({countries, search, selectHandler}) => {
       </ul>
 }
 
-const Content = ({countries, search, selectHandler}) => {
+const Content = ({countries, search, selectHandler, weather}) => {
   const matches = getMatches(countries, search)
   if (matches.length === 1)
-    return <Country country={matches[0]} />
+    return <Country country={matches[0]} weather={weather} />
   else
     return <Matches countries={countries} search={search} selectHandler={selectHandler} />
 }
@@ -57,12 +71,26 @@ const Content = ({countries, search, selectHandler}) => {
 const App = () => {
   const [ search, setSearch ] = useState('')
   const [ countries, setCountries ] = useState([])
+  const [ weather, setWeather ] = useState({})
+  const api_key = process.env.REACT_APP_WEATHERSTACK_API_KEY
 
   useEffect(() => {
     axios
       .get('https://restcountries.eu/rest/v2/all')
       .then(response => setCountries(response.data))
   }, [])
+
+  useEffect(() => {
+    const matches = getMatches(countries, search)
+    if (matches.length === 1)
+    {
+      const country = matches[0]
+      axios
+        .get('http://api.weatherstack.com/current?access_key='
+             + `${api_key}&query=${country.capital}`)
+        .then(response => setWeather(response.data))
+    }
+  }, [api_key, search, countries])
 
   const searchHandler = (event) => setSearch(event.target.value)
   const selectHandler = (country) => setSearch(country.name)
@@ -71,7 +99,11 @@ const App = () => {
     <div>
       <h1>Countries</h1>
       <Search searchHandler={searchHandler} />
-      <Content countries={countries} search={search} selectHandler={selectHandler}/>
+      <Content
+        countries={countries}
+        search={search}
+        selectHandler={selectHandler}
+        weather={weather} />
     </div>
   )
 }
