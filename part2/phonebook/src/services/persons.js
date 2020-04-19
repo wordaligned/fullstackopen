@@ -13,4 +13,16 @@ const create = person => (
         .then(response => response.data)
 )
 
-export default { getAll, create }
+const update = (id, person) => (
+    axios
+        .put(`${baseUrl}/${id}`, person)
+        .then(response => response.data)
+)
+
+const remove = person_id => (
+    axios
+        .delete(`${baseUrl}/${person_id}`)
+        .then(getAll)
+)
+
+export default { getAll, create, update, remove }
