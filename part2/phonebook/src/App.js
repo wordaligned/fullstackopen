@@ -32,7 +32,9 @@ const App = () => {
   const handleNumberChange = (event) => setNewNumber(event.target.value)
   const handleFilterChange = (event) => setNewFilter(event.target.value)
 
-  useEffect(() => personService.getAll().then(all => setPersons(all)), [])
+  useEffect(() => {
+    personService.getAll().then(all => setPersons(all))
+  }, [])
 
   return (
     <div>
