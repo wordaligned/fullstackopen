@@ -27,6 +27,10 @@ const App = () => {
             setStatusMessage(`Updated ${updated.name}`)
             setTimeout(() => setStatusMessage(null), 5000)
           })
+          .catch(error => {
+            alert(`${newName} is no longer in the phonebook`)
+            setPersons(persons.filter(p => p.id !== found.id))
+          })
       }
     }
     else
@@ -46,7 +50,12 @@ const App = () => {
   const removeEntry = (person) => {
     if (window.confirm(`Remove ${person.name}?`)) {
       const id = person.id
-      personService.remove(id).then(all => setPersons(all))
+      personService.remove(id)
+        .then(all => setPersons(all))
+        .catch(error => {
+          alert(`${person.name} had already been removed from the phonebook`)
+          setPersons(persons.filter(p => p.id !== id))
+        })
     }
   }
 
