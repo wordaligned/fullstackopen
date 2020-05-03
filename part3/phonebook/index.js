@@ -60,12 +60,16 @@ app.put('/api/persons/:id', (req, res, next) => {
         .catch(next)
 })
 
-app.get('/info', (req, res) => {
-    const content = `
-    <p>Phonebook has entries for ${persons.length} people.</p>
-    <p>${new Date()}</p>
-    `
-    res.send(content)
+app.get('/info', (req, res, next) => {
+    Person.estimatedDocumentCount()
+        .then(entries => {
+            const content = `
+            <p>Phonebook has entries for ${entries} people.</p>
+            <p>${new Date()}</p>
+            `
+            res.send(content)
+        })
+        .catch(next)
 })
 
 const errorHandler = (error, req, res, next) => {
