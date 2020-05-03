@@ -42,6 +42,9 @@ const App = () => {
           setStatusMessage(`Added ${created.name}`)
           setTimeout(() => setStatusMessage(null), 5000)
         })
+        .catch(error => {
+          setStatusMessage(error.response.data.error)
+        })
     }
     setNewName('')
     setNewNumber('')
