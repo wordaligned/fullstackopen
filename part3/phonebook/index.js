@@ -53,6 +53,13 @@ app.post('/api/persons', (req, res) => {
     person.save().then(saved => res.json(saved.toJSON()))
 })
 
+app.put('/api/persons/:id', (req, res, next) => {
+    const person = { name: req.body.name, number: req.body.number }
+    Person.findByIdAndUpdate(req.params.id, person, { new: true })
+        .then(updated => res.send(updated.toJSON()))
+        .catch(next)
+})
+
 app.get('/info', (req, res) => {
     const content = `
     <p>Phonebook has entries for ${persons.length} people.</p>
