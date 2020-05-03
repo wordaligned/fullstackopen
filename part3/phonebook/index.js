@@ -25,12 +25,9 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    persons = persons.filter(p => p.id !== id)
-    res.status(204).end()
+    Person.findByIdAndRemove(req.params.id)
+        .then(removed => res.status(204).end())
 })
-
-const generateId = () => Math.floor(Math.random() * 1000000)
 
 app.post('/api/persons', (req, res) => {
     const body = req.body
@@ -41,18 +38,11 @@ app.post('/api/persons', (req, res) => {
     if (!body.number) {
         return res.status(400).json({ error: 'number missing' })
     }
-    if (persons.find(p => p.name === body.name)) {
-        return res
-            .status(400)
-            .json({ error: `${body.name} already in phonebook` })
-    }
-    const person = {
+    const person = new Person({
       name: body.name,
-      number: body.number,
-      id: generateId()
-    }
-    persons = persons.concat(person)
-    res.json(person)
+      number: body.number
+    })
+    person.save().then(saved => res.json(saved.toJSON()))
 })
 
 app.get('/info', (req, res) => {
