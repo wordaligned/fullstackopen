@@ -21,14 +21,14 @@ const personSchema = new mongoose.Schema({
 
 const Person = mongoose.model('Person', personSchema)
 
-if (argv.length == 3) {
+if (argv.length === 3) {
   Person.find({}).then(result => {
     result.forEach(note => console.log(note))
     mongoose.connection.close()
   })
-} else if (process.argv.length == 5) {
-  const person = new Person({name: argv[3], number: argv[4]})
-  person.save().then(response => {
+} else if (process.argv.length === 5) {
+  const person = new Person({ name: argv[3], number: argv[4] })
+  person.save().then(_response => {
     console.log('person saved')
     mongoose.connection.close()
   })
