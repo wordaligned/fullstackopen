@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const Blog = require('./models/blog')
+const logger = require('./utils/logger')
 const mongoose = require('mongoose')
 require('dotenv').config()
 
@@ -32,5 +33,5 @@ app.post('/api/blogs', (request, response) => {
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+  logger.info(`Server running on port ${PORT}`)
 })
