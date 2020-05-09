@@ -1,12 +1,5 @@
 const listHelper = require('../utils/list_helper')
 
-test('dummy returns one', () => {
-  const blogs = []
-
-  const result = listHelper.dummy(blogs)
-  expect(result).toBe(1)
-})
-
 const blog1 = [
   {
     _id: '5a422aa71b54a676234d17f8',
@@ -67,5 +60,20 @@ describe('favourite', () => {
   test('of a list of one is that one', () => {
     const result = listHelper.favouriteBlog(blog1)
     expect(result).toEqual(blog1[0])
+  })
+})
+
+describe('author of the most blogs', () => {
+  test('is the author of the blog when one blog supplied', () => {
+    const result = listHelper.mostBlogs(blog1)
+    expect(result).toEqual({ author: 'Edsger W. Dijkstra', count: 1 })
+  })
+  test('is Dijkstra when full list supplied', () => {
+    const result = listHelper.mostBlogs(blogs3)
+    expect(result).toEqual({ author: 'Edsger W. Dijkstra', count: 2 })
+  })
+  test('is undefined when no blogs supplied', () => {
+    const result = listHelper.mostBlogs([])
+    expect(result).toBe(undefined)
   })
 })
