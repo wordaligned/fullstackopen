@@ -12,4 +12,12 @@ const mostBlogs = (blogs) => {
   }
 }
 
-module.exports = { totalLikes, favouriteBlog, mostBlogs }
+const mostLikes = (blogs) => {
+  let author_likes = []
+  _.each(_.groupBy(blogs, 'author'), (entries, author) => {
+    author_likes.push({ author: author, likes: _.sumBy(entries, 'likes') })
+  })
+  return _.maxBy(author_likes, 'likes')
+}
+
+module.exports = { totalLikes, favouriteBlog, mostBlogs, mostLikes }
