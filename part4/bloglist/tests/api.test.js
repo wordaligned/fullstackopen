@@ -39,6 +39,12 @@ test('blogs are returned as json', async () => {
   expect(res.body).toHaveLength(3)
 })
 
+test('blog entries have id fields', async () => {
+  const res = await api.get('/api/blogs')
+
+  expect(res.body[0].id).toBeDefined()
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
