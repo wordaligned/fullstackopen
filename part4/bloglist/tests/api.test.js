@@ -33,7 +33,6 @@ beforeEach(async () => {
 
 test('blogs are returned as json', async () => {
   const res = await api.get('/api/blogs')
-
   expect(res.status).toEqual(200)
   expect(res.get('content-type')).toMatch(/application\/json/)
   expect(res.body).toHaveLength(3)
@@ -41,8 +40,23 @@ test('blogs are returned as json', async () => {
 
 test('blog entries have id fields', async () => {
   const res = await api.get('/api/blogs')
-
   expect(res.body[0].id).toBeDefined()
+})
+
+test('new blogs can be posted', async () => {
+  const new_blog = {
+    'title': 'Word Aligned',
+    'author': 'Thomas Guest',
+    'url': 'http://wordaligned.org',
+    'likes': 999
+  }
+  const blogs_before = await Blog.countDocuments()
+  const res = await api.post('/api/blogs', new_blog)
+  expect(res.status).toEqual(201)
+  expect(res.get('content-type')).toMatch(/application\/json/)
+  expect(res.body.id).toBeDefined()
+  const blogs_after = await Blog.countDocuments()
+  expect(blogs_after).toEqual(blogs_before + 1)
 })
 
 afterAll(() => {
