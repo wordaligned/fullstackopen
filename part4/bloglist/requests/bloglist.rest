@@ -7,6 +7,5 @@ content-type: application/json
 {
     "title": "Word Aligned",
     "author": "Thomas Guest",
-    "url": "http://wordaligned.org",
-    "likes": 999
+    "url": "http://wordaligned.org"
 }

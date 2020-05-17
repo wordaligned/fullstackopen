@@ -51,12 +51,26 @@ test('new blogs can be posted', async () => {
     'likes': 999
   }
   const blogs_before = await Blog.countDocuments()
-  const res = await api.post('/api/blogs', new_blog)
+  const res = await api.post('/api/blogs').send(new_blog)
   expect(res.status).toEqual(201)
   expect(res.get('content-type')).toMatch(/application\/json/)
   expect(res.body.id).toBeDefined()
+  expect(res.body.title).toEqual(new_blog.title)
+  expect(res.body.author).toEqual(new_blog.author)
+  expect(res.body.url).toEqual(new_blog.url)
   const blogs_after = await Blog.countDocuments()
   expect(blogs_after).toEqual(blogs_before + 1)
+})
+
+test('new blogs default to 0 likes', async () => {
+  const new_blog = {
+    'title': 'Game of life',
+    'author': 'Thomas Guest',
+    'url': 'http://wordaligned.org/life'
+  }
+  const res = await api.post('/api/blogs').send(new_blog)
+  const blog = await api.get(`/api/blogs/${res.body.id}`)
+  expect(blog.body.likes).toEqual(0)
 })
 
 afterAll(() => {
