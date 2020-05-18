@@ -13,6 +13,12 @@ blogsRouter.get('/:id', async (request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
+  if (!body.url) {
+    return response.status(400).json({ error: 'author missing' })
+  }
+  if (!body.title) {
+    return response.status(400).json({ error: 'url missing' })
+  }
   const blog = new Blog({
     author: body.author,
     title: body.title,

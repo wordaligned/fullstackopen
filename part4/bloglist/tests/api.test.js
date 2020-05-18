@@ -73,6 +73,24 @@ test('new blogs default to 0 likes', async () => {
   expect(blog.body.likes).toEqual(0)
 })
 
+test('new blogs require a title', async () => {
+  const new_blog = {
+    'author': 'Thomas Guest',
+    'url': 'http://wordaligned.org'
+  }
+  const res = await api.post('/api/blogs').send(new_blog)
+  expect(res.status).toEqual(400)
+})
+
+test('new blogs require a url', async () => {
+  const new_blog = {
+    'author': 'Thomas Guest',
+    'title': 'Slicing'
+  }
+  const res = await api.post('/api/blogs').send(new_blog)
+  expect(res.status).toEqual(400)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
