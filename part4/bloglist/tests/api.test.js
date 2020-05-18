@@ -31,16 +31,27 @@ beforeEach(async () => {
   await Promise.all(initialBlogs.map(b => (new Blog(b)).save()))
 })
 
-test('blogs are returned as json', async () => {
-  const res = await api.get('/api/blogs')
-  expect(res.status).toEqual(200)
-  expect(res.get('content-type')).toMatch(/application\/json/)
-  expect(res.body).toHaveLength(3)
-})
+describe('starting with some blogs', () => {
 
-test('blog entries have id fields', async () => {
-  const res = await api.get('/api/blogs')
-  expect(res.body[0].id).toBeDefined()
+  test('blogs are returned as json', async () => {
+    const res = await api.get('/api/blogs')
+    expect(res.status).toEqual(200)
+    expect(res.get('content-type')).toMatch(/application\/json/)
+    expect(res.body).toHaveLength(3)
+  })
+
+  test('blog entries have id fields', async () => {
+    const res = await api.get('/api/blogs')
+    expect(res.body[0].id).toBeDefined()
+  })
+
+  test('blogs can be deleted', async () => {
+    const before = await api.get('/api/blogs')
+    const id = before.body[0].id
+    await api.delete(`/api/blogs/${id}`).expect(204)
+    const after = await api.get('/api/blogs')
+    expect(after.body).toHaveLength(2)
+  })
 })
 
 test('new blogs can be posted', async () => {
