@@ -52,6 +52,19 @@ describe('starting with some blogs', () => {
     const after = await api.get('/api/blogs')
     expect(after.body).toHaveLength(2)
   })
+
+  test('blogs can be modified', async () => {
+    const new_likes = 1234
+    const before = await api.get('/api/blogs')
+    const id = before.body[0].id
+    const update = { 'likes': new_likes }
+    await api.put(`/api/blogs/${id}`).send(update).expect(200)
+    const after = await api.get(`/api/blogs/${id}`)
+    expect(after.body.url).toEqual(before.body[0].url)
+    expect(after.body.title).toEqual(before.body[0].title)
+    expect(after.body.author).toEqual(before.body[0].author)
+    expect(after.body.likes).toEqual(new_likes)
+  })
 })
 
 test('new blogs can be posted', async () => {
