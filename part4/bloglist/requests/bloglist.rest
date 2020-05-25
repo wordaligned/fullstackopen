@@ -9,3 +9,16 @@ content-type: application/json
     "author": "Thomas Guest",
     "url": "http://wordaligned.org"
 }
+
+###
+GET http://localhost:3001/api/users
+
+###
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "name": "Thomas Guest",
+    "username": "me",
+    "password": "1234"
+}

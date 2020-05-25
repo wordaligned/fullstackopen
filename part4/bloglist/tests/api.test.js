@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 
@@ -27,12 +28,12 @@ const initialBlogs = [
 ]
 
 beforeEach(async () => {
+  await User.deleteMany({})
   await Blog.deleteMany({})
   await Promise.all(initialBlogs.map(b => (new Blog(b)).save()))
 })
 
 describe('starting with some blogs', () => {
-
   test('blogs are returned as json', async () => {
     const res = await api.get('/api/blogs')
     expect(res.status).toEqual(200)
@@ -67,52 +68,96 @@ describe('starting with some blogs', () => {
   })
 })
 
-test('new blogs can be posted', async () => {
-  const new_blog = {
-    'title': 'Word Aligned',
-    'author': 'Thomas Guest',
-    'url': 'http://wordaligned.org',
-    'likes': 999
-  }
-  const blogs_before = await Blog.countDocuments()
-  const res = await api.post('/api/blogs').send(new_blog)
-  expect(res.status).toEqual(201)
-  expect(res.get('content-type')).toMatch(/application\/json/)
-  expect(res.body.id).toBeDefined()
-  expect(res.body.title).toEqual(new_blog.title)
-  expect(res.body.author).toEqual(new_blog.author)
-  expect(res.body.url).toEqual(new_blog.url)
-  const blogs_after = await Blog.countDocuments()
-  expect(blogs_after).toEqual(blogs_before + 1)
+describe('new blogs', () => {
+  test('can be created', async () => {
+    const new_blog = {
+      'title': 'Word Aligned',
+      'author': 'Thomas Guest',
+      'url': 'http://wordaligned.org',
+      'likes': 999
+    }
+    const blogs_before = await Blog.countDocuments()
+    const res = await api.post('/api/blogs').send(new_blog)
+    expect(res.status).toEqual(201)
+    expect(res.get('content-type')).toMatch(/application\/json/)
+    expect(res.body.id).toBeDefined()
+    expect(res.body.title).toEqual(new_blog.title)
+    expect(res.body.author).toEqual(new_blog.author)
+    expect(res.body.url).toEqual(new_blog.url)
+    const blogs_after = await Blog.countDocuments()
+    expect(blogs_after).toEqual(blogs_before + 1)
+  })
+
+  test('default to 0 likes', async () => {
+    const new_blog = {
+      'title': 'Game of life',
+      'author': 'Thomas Guest',
+      'url': 'http://wordaligned.org/life'
+    }
+    const res = await api.post('/api/blogs').send(new_blog)
+    const blog = await api.get(`/api/blogs/${res.body.id}`)
+    expect(blog.body.likes).toEqual(0)
+  })
+
+  test('require a title', async () => {
+    const new_blog = {
+      'author': 'Thomas Guest',
+      'url': 'http://wordaligned.org'
+    }
+    const res = await api.post('/api/blogs').send(new_blog)
+    expect(res.status).toEqual(400)
+  })
+
+  test('require a url', async () => {
+    const new_blog = {
+      'author': 'Thomas Guest',
+      'title': 'Slicing'
+    }
+    const res = await api.post('/api/blogs').send(new_blog)
+    expect(res.status).toEqual(400)
+  })
 })
 
-test('new blogs default to 0 likes', async () => {
-  const new_blog = {
-    'title': 'Game of life',
-    'author': 'Thomas Guest',
-    'url': 'http://wordaligned.org/life'
-  }
-  const res = await api.post('/api/blogs').send(new_blog)
-  const blog = await api.get(`/api/blogs/${res.body.id}`)
-  expect(blog.body.likes).toEqual(0)
-})
+describe('new users', () => {
+  test('can be created', async () => {
+    const new_user = {
+      'username': 'tag',
+      'name': 'Thomas Guest',
+      'password': 'abcd'
+    }
+    const users_before = await User.countDocuments()
+    const res = await api.post('/api/users').send(new_user)
+    expect(res.status).toEqual(201)
+    expect(res.get('content-type')).toMatch(/application\/json/)
+    expect(res.body.id).toBeDefined()
+    expect(res.body.username).toEqual(new_user.username)
+    expect(res.body.name).toEqual(new_user.name)
+    const users_after = await User.countDocuments()
+    expect(users_after).toEqual(users_before + 1)
+  })
 
-test('new blogs require a title', async () => {
-  const new_blog = {
-    'author': 'Thomas Guest',
-    'url': 'http://wordaligned.org'
-  }
-  const res = await api.post('/api/blogs').send(new_blog)
-  expect(res.status).toEqual(400)
-})
+  test('require a valid username', async () => {
+    const new_user = {
+      'username': 'me',
+      'name': 'Thomas',
+      'password': 'xxx'
+    }
+    const res = await api.post('/api/users').send(new_user)
+    expect(res.status).toEqual(400)
+    expect(res.body.error).toMatch(/validation failed/)
+  })
 
-test('new blogs require a url', async () => {
-  const new_blog = {
-    'author': 'Thomas Guest',
-    'title': 'Slicing'
-  }
-  const res = await api.post('/api/blogs').send(new_blog)
-  expect(res.status).toEqual(400)
+  test('require a unique username', async () => {
+    const new_user = {
+      'username': 'tag',
+      'name': 'Thomas',
+      'password': 'xxx'
+    }
+    await api.post('/api/users').expect(201)
+    const res = api.post('/api/users')
+    expect(res.status).toEqual(400)
+    expect(res.body.error).toMatch(/validation failed/)
+  })
 })
 
 afterAll(() => {
