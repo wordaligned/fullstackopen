@@ -1,4 +1,5 @@
 ###
+# @name login
 POST http://localhost:3001/api/login
 content-type: application/json
 
@@ -13,6 +14,7 @@ GET http://localhost:3001/api/blogs
 ###
 POST http://localhost:3001/api/blogs
 content-type: application/json
+authorization: bearer {{login.response.body.token}}
 
 {
     "title": "Word Aligned",
