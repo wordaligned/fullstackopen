@@ -153,8 +153,8 @@ describe('new users', () => {
       'name': 'Thomas',
       'password': 'xxx'
     }
-    await api.post('/api/users').expect(201)
-    const res = api.post('/api/users')
+    await api.post('/api/users').send(new_user).expect(201)
+    const res = await api.post('/api/users').send(new_user)
     expect(res.status).toEqual(400)
     expect(res.body.error).toMatch(/validation failed/)
   })
