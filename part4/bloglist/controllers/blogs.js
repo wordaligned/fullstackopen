@@ -13,9 +13,21 @@ blogsRouter.get('/:id', async (request, response) => {
   response.json(blog)
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id)
-  response.status(204).end()
+blogsRouter.delete('/:id', async (req, res) => {
+  if (!req.token) {
+    return res.status(401).json({ error: 'token missing' })
+  }
+  const decoded = jwt.verify(req.token, process.env.SECRET)
+  if (!decoded.id) {
+    return res.status(401).json({ error: 'failed to decode token' })
+  }
+  const blog = await Blog.findById(req.params.id)
+  if (blog.user.toString() !== decoded.id.toString()) {
+    return res.status(401).json({ error: 'not the blog creator' })
+  } else {
+    await Blog.deleteOne(blog)
+    return res.status(204).end()
+  }
 })
 
 blogsRouter.put('/:id', async (request, response) => {

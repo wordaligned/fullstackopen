@@ -12,6 +12,7 @@ content-type: application/json
 GET http://localhost:3001/api/blogs
 
 ###
+# @name create
 POST http://localhost:3001/api/blogs
 content-type: application/json
 authorization: bearer {{login.response.body.token}}
@@ -21,6 +22,10 @@ authorization: bearer {{login.response.body.token}}
     "author": "Thomas Guest",
     "url": "http://wordaligned.org"
 }
+
+###
+DELETE http://localhost:3001/api/blogs/{{create.response.body.id}}
+authorization: bearer {{login.response.body.token}}
 
 ###
 GET http://localhost:3001/api/users
