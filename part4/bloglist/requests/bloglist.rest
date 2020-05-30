@@ -1,3 +1,13 @@
+###
+POST http://localhost:3001/api/login
+content-type: application/json
+
+{
+    "name": "Thomas Guest",
+    "username": "thomas",
+    "password": "1234"
+}
+###
 GET http://localhost:3001/api/blogs
 
 ###
@@ -19,6 +29,6 @@ Content-Type: application/json
 
 {
     "name": "Thomas Guest",
-    "username": "me",
+    "username": "thomas",
     "password": "1234"
 }
