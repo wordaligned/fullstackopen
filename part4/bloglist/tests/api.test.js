@@ -3,6 +3,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const hasher = require('../utils/hasher')
 
 const api = supertest(app)
 
@@ -27,10 +28,24 @@ const initialBlogs = [
   }
 ]
 
+const password = 'ABC123'
+
+const initialUser = {
+  username: 'tester',
+  name: 'Thomas Guest',
+  password
+}
+
 beforeEach(async () => {
   await User.deleteMany({})
+  const passwordHash = await hasher(password)
+  const user = await (new User(Object.assign({ passwordHash }, initialUser))).save()
   await Blog.deleteMany({})
-  await Promise.all(initialBlogs.map(b => (new Blog(b)).save()))
+  await Promise.all(initialBlogs.map(b => {
+    b.user = user
+    const blog = new Blog(b)
+    blog.save()
+  }))
 })
 
 describe('starting with some blogs', () => {
@@ -47,9 +62,13 @@ describe('starting with some blogs', () => {
   })
 
   test('blogs can be deleted', async () => {
+    const auth = await api.post('/api/login').send(initialUser)
     const before = await api.get('/api/blogs')
     const id = before.body[0].id
-    await api.delete(`/api/blogs/${id}`).expect(204)
+    await api
+      .delete(`/api/blogs/${id}`)
+      .set('authorization', `bearer ${auth.body.token}`)
+      .expect(204)
     const after = await api.get('/api/blogs')
     expect(after.body).toHaveLength(2)
   })
@@ -76,8 +95,12 @@ describe('new blogs', () => {
       'url': 'http://wordaligned.org',
       'likes': 999
     }
+    const auth = await api.post('/api/login').send(initialUser)
     const blogs_before = await Blog.countDocuments()
-    const res = await api.post('/api/blogs').send(new_blog)
+    const res = await api
+      .post('/api/blogs')
+      .set('authorization', `bearer ${auth.body.token}`)
+      .send(new_blog)
     expect(res.status).toEqual(201)
     expect(res.get('content-type')).toMatch(/application\/json/)
     expect(res.body.id).toBeDefined()
@@ -88,32 +111,53 @@ describe('new blogs', () => {
     expect(blogs_after).toEqual(blogs_before + 1)
   })
 
-  test('default to 0 likes', async () => {
+  test('cannot be created unless authorized', async () => {
     const new_blog = {
       'title': 'Game of life',
       'author': 'Thomas Guest',
       'url': 'http://wordaligned.org/life'
     }
-    const res = await api.post('/api/blogs').send(new_blog)
+    await api.post('/api/blogs').send(new_blog).expect(401)
+  })
+
+  test('default to 0 likes', async () => {
+    const auth = await api.post('/api/login').send(initialUser)
+    const new_blog = {
+      'title': 'Game of life',
+      'author': 'Thomas Guest',
+      'url': 'http://wordaligned.org/life'
+    }
+    const res = await api
+      .post('/api/blogs')
+      .set('authorization', `bearer ${auth.body.token}`)
+      .send(new_blog)
     const blog = await api.get(`/api/blogs/${res.body.id}`)
     expect(blog.body.likes).toEqual(0)
   })
 
   test('require a title', async () => {
+    const auth = await api.post('/api/login').send(initialUser)
     const new_blog = {
       'author': 'Thomas Guest',
       'url': 'http://wordaligned.org'
     }
-    const res = await api.post('/api/blogs').send(new_blog)
+    const res = await api
+      .post('/api/blogs')
+      .set('authorization', `bearer ${auth.body.token}`)
+      .send(new_blog)
     expect(res.status).toEqual(400)
   })
 
   test('require a url', async () => {
+    const auth = await api.post('/api/login').send(initialUser)
     const new_blog = {
       'author': 'Thomas Guest',
       'title': 'Slicing'
     }
-    const res = await api.post('/api/blogs').send(new_blog)
+    const res = await api
+      .post('/api/blogs')
+      .set('authorization', `bearer ${auth.body.token}`)
+      .send(new_blog)
     expect(res.status).toEqual(400)
   })
 })
