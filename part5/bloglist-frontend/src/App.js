@@ -9,7 +9,7 @@ const Notification = ({ message }) => (
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [errorMessage, setErrorMessage] = useState('')
+  const [message, setMessage] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [title, setTitle] = useState('')
@@ -57,10 +57,8 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      setMessage('Wrong credentials')
+      setTimeout(() => { setMessage(null )}, 5000)
     }
   }
 
@@ -70,13 +68,14 @@ const App = () => {
       const newBlog = { title, author, url }
       const created = await blogService.create(newBlog)
       setBlogs(blogs.concat(created))
+      setMessage(`Created blog: "${title}"`)
       setTitle('')
       setAuthor('')
       setUrl('')
     } catch (exception) {
-      setErrorMessage('Unauthorized')
-      setTimeout(() => { setErrorMessage(null) }, 5000)
+      setMessage('Blog creation failed')
     }
+    setTimeout(() => { setMessage(null) }, 5000)
   }
 
   const handleLogout = async () => {
@@ -121,7 +120,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={errorMessage} />
+      <Notification message={message} />
       {user === null ? loginForm() : 
         <div>
           {blogList()}
