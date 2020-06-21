@@ -12,6 +12,9 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
 
   useEffect(() => {
@@ -49,6 +52,7 @@ const App = () => {
     try {
       const user = await loginService.login({username, password})
       window.localStorage.setItem('blogListUser', JSON.stringify(user))
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -60,8 +64,24 @@ const App = () => {
     }
   }
 
+  const createBlog = async (event) => {
+    event.preventDefault()
+    try {
+      const newBlog = { title, author, url }
+      const created = await blogService.create(newBlog)
+      setBlogs(blogs.concat(created))
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+    } catch (exception) {
+      setErrorMessage('Unauthorized')
+      setTimeout(() => { setErrorMessage(null) }, 5000)
+    }
+  }
+
   const handleLogout = async () => {
     window.localStorage.removeItem('blogListUser')
+    setUser(null)
   }
 
   const blogList = () => (
@@ -72,10 +92,41 @@ const App = () => {
     </div>
   )
 
+  const newBlogForm = () => (
+    <div>
+      <h2>Add new blog</h2>
+      <form onSubmit={createBlog}>
+      <div>
+        title 
+        <input
+          type="text" value={title} name="Title"
+          onChange={({ target }) => setTitle(target.value)} />
+      </div>
+      <div>
+        author 
+        <input
+          type="text" value={author} name="Author"
+          onChange={({ target }) => setAuthor(target.value)} />
+      </div>
+      <div>
+        url 
+        <input
+          type="text" value={url} name="Url"
+          onChange={({ target }) => setUrl(target.value)} />
+      </div>
+      <button type="submit">create</button>
+    </form>
+   </div>
+  )
+
   return (
     <div>
       <Notification message={errorMessage} />
-      {user === null ? loginForm() : blogList()}
+      {user === null ? loginForm() : 
+        <div>
+          {blogList()}
+          {newBlogForm()}
+        </div>}
     </div>
   )
 }
