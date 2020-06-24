@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import NewBlogForm from './components/NewBlogForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -27,6 +28,8 @@ const App = () => {
     }
   }, [])
 
+  const blogFormRef = useRef()
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -46,7 +49,9 @@ const App = () => {
   )
   
   const blogForm = () => (
-    <NewBlogForm createBlog={createBlog} />
+    <Togglable buttonLabel="add blog" ref={blogFormRef}>
+      <NewBlogForm createBlog={createBlog} />
+    </Togglable> 
   )
   
   const handleLogin = async (event) => {
@@ -66,6 +71,7 @@ const App = () => {
 
   const createBlog = async (toCreate) => {
     try {
+      blogFormRef.current.toggleVisibility()
       const created = await blogService.create(toCreate)
       setBlogs(blogs.concat(created))
       setMessage(`Created blog: "${created.title}"`)
