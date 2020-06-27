@@ -112,7 +112,7 @@ const App = () => {
       {blogs.map(blog => (
         <Blog key={blog.id} 
               blog={blog}
-              username={username}
+              username={user.username}
               like={() => handleLike(blog)}
               remove={() => handleRemove(blog)} />
               ))}
