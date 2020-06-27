@@ -73,6 +73,7 @@ const App = () => {
     try {
       blogFormRef.current.toggleVisibility()
       const created = await blogService.create(toCreate)
+
       setBlogs(blogs.concat(created))
       setMessage(`Created blog: "${created.title}"`)
     } catch (exception) {
