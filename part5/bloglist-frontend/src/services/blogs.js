@@ -24,7 +24,7 @@ const remove = async toRemove => {
 }
 
 const like = async (toLike) => {
-  const toPut = Object.assign(toLike, 
+  const toPut = Object.assign(toLike,
     { likes: toLike.likes + 1, user: toLike.user.id })
   const response = await axios.put(`${baseUrl}/${toLike.id}`, toPut)
   return response.data

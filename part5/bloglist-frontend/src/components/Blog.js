@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 const Blog = ({ blog, username, like, remove }) => {
   const [visible, setVisible] = useState(false)
-  
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -11,7 +11,7 @@ const Blog = ({ blog, username, like, remove }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-  
+
   const showWhenVisible = { display: visible ? '' : 'none' }
   const showIfCreator = { display: username === blog.user.username ? '' : 'none' }
   const toggleVisibility = () => setVisible(!visible)
@@ -19,7 +19,7 @@ const Blog = ({ blog, username, like, remove }) => {
 
   return (
     <div style={blogStyle}>
-      {blog.title} 
+      {blog.title}
       <button onClick={toggleVisibility}>{buttonLabel()}</button>
       <div style={showWhenVisible}>
         <p>{blog.author}</p>

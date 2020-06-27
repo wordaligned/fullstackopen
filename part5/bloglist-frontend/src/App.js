@@ -35,31 +35,31 @@ const App = () => {
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
-        username 
-        <input 
+        username
+        <input
           type="text" value={username} name="Username"
           onChange={({ target }) => setUsername(target.value)} />
       </div>
       <div>
         password
-        <input 
+        <input
           type="password" value={password} name="Password"
           onChange={({ target }) => setPassword(target.value)} />
       </div>
       <button type="submit">login</button>
     </form>
   )
-  
+
   const blogForm = () => (
     <Togglable buttonLabel="add blog" ref={blogFormRef}>
       <NewBlogForm createBlog={createBlog} />
-    </Togglable> 
+    </Togglable>
   )
-  
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({username, password})
+      const user = await loginService.login({ username, password })
       window.localStorage.setItem('blogListUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
@@ -110,19 +110,19 @@ const App = () => {
       <h2>Blogs</h2>
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
       {blogs.map(blog => (
-        <Blog key={blog.id} 
-              blog={blog}
-              username={user.username}
-              like={() => handleLike(blog)}
-              remove={() => handleRemove(blog)} />
-              ))}
+        <Blog key={blog.id}
+          blog={blog}
+          username={user.username}
+          like={() => handleLike(blog)}
+          remove={() => handleRemove(blog)} />
+      ))}
     </div>
   )
 
   return (
     <div>
       <Notification message={message} />
-      {user === null ? loginForm() : 
+      {user === null ? loginForm() :
         <div>
           {blogList()}
           {blogForm()}
