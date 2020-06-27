@@ -18,4 +18,11 @@ const create = async toCreate => {
   return response.data
 }
 
-export default { setToken, getAll, create }
+const like = async (toLike) => {
+  const toPut = Object.assign(toLike, 
+    { likes: toLike.likes + 1, user: toLike.user.id })
+  const response = await axios.put(`${baseUrl}/${toLike.id}`, toPut)
+  return response.data
+}
+
+export default { setToken, getAll, create, like }
