@@ -16,8 +16,10 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+  const mostLikesFirst = (a, b) => b.likes - a.likes
+
   useEffect(() => {
-    blogService.getAll().then(blogs => { setBlogs(blogs) })
+    blogService.getAll().then(blogs => { setBlogs(blogs.sort(mostLikesFirst)) })
   }, [])
 
   useEffect(() => {
@@ -89,7 +91,11 @@ const App = () => {
 
   const handleLike = async (blog) => {
     const liked = await blogService.like(blog)
-    setBlogs(blogs.map(blog => blog.id === liked.id ? liked : blog))
+    setBlogs(
+      blogs
+        .map(blog => blog.id === liked.id ? liked : blog)
+        .sort(mostLikesFirst)
+    )
   }
 
   const blogList = () => (
