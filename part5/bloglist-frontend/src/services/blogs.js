@@ -18,6 +18,11 @@ const create = async toCreate => {
   return response.data
 }
 
+const remove = async toRemove => {
+  const config = { headers: { Authorization: token } }
+  await axios.delete(`${baseUrl}/${toRemove.id}`, config)
+}
+
 const like = async (toLike) => {
   const toPut = Object.assign(toLike, 
     { likes: toLike.likes + 1, user: toLike.user.id })
@@ -25,4 +30,4 @@ const like = async (toLike) => {
   return response.data
 }
 
-export default { setToken, getAll, create, like }
+export default { setToken, getAll, create, remove, like }
