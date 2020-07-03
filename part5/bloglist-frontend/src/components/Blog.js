@@ -12,21 +12,24 @@ const Blog = ({ blog, username, like, remove }) => {
     marginBottom: 5
   }
 
-  const showWhenVisible = { display: visible ? '' : 'none' }
   const showIfCreator = { display: username === blog.user.username ? '' : 'none' }
   const toggleVisibility = () => setVisible(!visible)
   const buttonLabel = () => visible ? 'hide' : 'show'
+
+  const details = visible
+    ? (<div className='details'>
+      <p>{blog.url}</p>
+      <p>likes {blog.likes} <button onClick={like}>like</button></p>
+      <p style={showIfCreator}><button onClick={remove}>remove</button></p>
+    </div>)
+    : <div></div>
 
   return (
     <div style={blogStyle}>
       <span className='title'>{blog.title}</span>
       <span className='author'>{blog.author}</span>
       <button onClick={toggleVisibility}>{buttonLabel()}</button>
-      <div className='details' style={showWhenVisible}>
-        <p>{blog.url}</p>
-        <p>likes {blog.likes} <button onClick={like}>like</button></p>
-        <p style={showIfCreator}><button onClick={remove}>remove</button></p>
-      </div>
+      {details}
     </div>
   )
 }
