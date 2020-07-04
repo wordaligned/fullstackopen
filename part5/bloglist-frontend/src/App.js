@@ -33,7 +33,7 @@ const App = () => {
   const blogFormRef = useRef()
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
+    <form id='loginForm' onSubmit={handleLogin}>
       <div>
         username
         <input
