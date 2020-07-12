@@ -24,6 +24,13 @@ export const vote = (id) => {
   }
 }
 
+export const addAnecdote = (content) => {
+  return {
+    type: 'ADD',
+    data: { content }
+  }
+}
+
 const initialState = anecdotesAtStart.map(asObject)
 
 const reducer = (state = initialState, action) => {
@@ -31,6 +38,8 @@ const reducer = (state = initialState, action) => {
     case 'VOTE':
       const id = action.data.id
       return state.map((a) => a.id === id ? { ...a, votes: a.votes + 1 } : a)
+    case 'ADD':
+      return [...state, asObject(action.data.content)]
     default: 
       return state
   }
