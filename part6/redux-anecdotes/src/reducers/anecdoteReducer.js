@@ -17,7 +17,7 @@ const asObject = (anecdote) => {
   }
 }
 
-export const vote = (id) => {
+export const voteFor = (id) => {
   return {
     type: 'VOTE',
     data: { id }
