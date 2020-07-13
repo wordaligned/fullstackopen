@@ -9,7 +9,7 @@ const Anecdotes = () => {
   const filter = useSelector(state => state.filter)
   const byVote = (a1, a2) => a2.votes - a1.votes
   const vote = (anecdote) => {
-      dispatch(voteFor(anecdote.id))
+      dispatch(voteFor(anecdote))
       dispatch(notify(`You voted for "${anecdote.content}"`))
       setTimeout(() => dispatch(clear()), 5000)
   }
