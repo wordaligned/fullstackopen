@@ -7,10 +7,13 @@ export const voteFor = (id) => {
   }
 }
 
-export const addAnecdote = (content) => {
-  return {
-    type: 'ADD',
-    data: { content }
+export const addAnecdote = content => {
+  return async dispatch => {
+    const added = await anecdoteService.createNew(content)
+    dispatch({
+      type: 'ADD',
+      data: { added }
+    })
   }
 }
 
@@ -30,7 +33,7 @@ const reducer = (state = [], action) => {
       const id = action.data.id
       return state.map((a) => a.id === id ? { ...a, votes: a.votes + 1 } : a)
     case 'ADD':
-      return [...state, action.data.content]
+      return [...state, action.data.added]
     case 'INITIALISE':
       return action.data
     default:
