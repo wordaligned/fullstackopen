@@ -10,7 +10,7 @@ export const clear = () => {
     type: 'CLEAR'
   }
 }
-      
+
 const reducer = (state = '', action) => {
   switch (action.type) {
     case 'NOTIFY': return action.data.content
