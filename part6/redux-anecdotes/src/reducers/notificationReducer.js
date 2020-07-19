@@ -1,10 +1,16 @@
+let timeoutId = undefined
+
 export const setNotification = (content, timeout_secs) => {
   return async dispatch => {
     dispatch({
       type: 'NOTIFY',
       data: { content }
     })
-    setTimeout(() => {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId)
+    }
+    timeoutId = setTimeout(() => {
+      timeoutId = undefined
       dispatch({type: 'CLEAR'})
     }, timeout_secs * 1000)
   }
