@@ -31,20 +31,20 @@ const Anecdotes = (props) => {
     </div>
   )
 }
-const mapStateToProps = (state) => {
-  console.log(state)
+
+const stateToProps = (state) => {
   return {
     anecdotes: state.anecdotes,
     filter: state.filter
   }
 }
 
-const mapDispatchToProps = {
+const dispatchToProps = {
   voteFor,
   setNotification
 }
 
 const ConnectedAnecdotes = connect(
-  mapStateToProps, 
-  mapDispatchToProps)(Anecdotes)
+  stateToProps, 
+  dispatchToProps)(Anecdotes)
 export default ConnectedAnecdotes
