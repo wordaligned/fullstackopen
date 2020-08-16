@@ -88,8 +88,11 @@ const CreateNew = (props) => {
       </form>
     </div>
   )
-
 }
+
+const Notification = ({ notification }) => (
+  notification === '' ? <></> : <div>{notification}</div>
+)
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
@@ -113,6 +116,8 @@ const App = () => {
 
   const addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0)
+    setNotification(`Anecdote ${anecdote.content} created`)
+    setTimeout(() => setNotification(''), 10000)
     setAnecdotes(anecdotes.concat(anecdote))
   }
 
@@ -136,26 +141,27 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
-        <Router>
+      <Router>
         <div>
           <Link style={padding} to='/'>anecdotes</Link>
           <Link style={padding} to='/create'>create new</Link>
           <Link style={padding} to='/about'>about</Link>
         </div>
-      <Switch>
-        <Route path='/anecdotes/:id'>
-          <Anecdote anecdotes={anecdotes}/>
-        </Route>
-        <Route path='/about'>
-          <About />
-        </Route>
-        <Route path='/create'>
-          <CreateNew addNew={addNew} />
-        </Route>
-        <Route path='/'>
-          <AnecdoteList anecdotes={anecdotes} />
-        </Route>
-      </Switch>
+        <Notification notification={notification}/>
+        <Switch>
+          <Route path='/anecdotes/:id'>
+            <Anecdote anecdotes={anecdotes}/>
+          </Route>
+          <Route path='/about'>
+            <About />
+          </Route>
+          <Route path='/create'>
+            <CreateNew addNew={addNew} />
+          </Route>
+          <Route path='/'>
+            <AnecdoteList anecdotes={anecdotes} />
+          </Route>
+        </Switch>
       </Router>
       <Footer />
     </div>
